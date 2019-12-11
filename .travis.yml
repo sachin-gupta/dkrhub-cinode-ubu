@@ -13,16 +13,11 @@ branches:
 env:
   # Global environment variables
   global:
-    # Encrypted tokens for security reason
-    - secure: "smYr7GEYava6uJoJsYi9ONSyk/yiAy6HfVNbtek+mXSycJ7P6v4tWskzz4D/jyCBd+fTN+ffvnSmsJHp+uiqWLd3EE2yFY8ZrGbWM8YcTrRieIF5jHzXvm/mWfNe6X5d7ppTBiDkStbFE/tM2HsQv5XjTa3MlLfbuNcFzQ4ozjI6LSghrbqBjKzzcuhWFXiK+lJ4iGBb0pLIUGNn2tzQkBvlGPBvzBdS2MHTcXs7CtnKW8BkyHxqzF4n7D7tmDc5/BlLYap2QcRtfjfQKreMNGi4sBQDvQ6rc7iHSDItm9AA8IIHf2+gn7Ex0RN3zgtFBdhAvIsDHhJCcoUTTa0BF9Wk8BmCnBC2an66jv/8WLjodHvIYA3qV1ot5XGFpaPwgbxC+IK4ULEpyh1SGnumzAwAajzzmmSFNYtvtK1ZdKm7IOO6bDaXgOKVDywi8ZzVfvv1KNdtAw9Sqc7ulnYIevqrrrWjhWJzLFN2GujCFcn4o5iCF5KzD8ImtF4x4O3TVMGg6c5+sF33H9IqJY0utUdSXVZ/UMwf6b06H6gEnHSrw78ohLhQqUID00GkZ9gLjAe63t+n9MW2UcXwHvTi3oVRWrEKsjfCbPQwbyDZXV7XkAq9bgB+dwaKnUnppIQBdas4/bjjc70VFaj0LruejEQCR3wEnVSjeJuE+LKkV2A=" # DKRHUB_USER
-    - secure: "DEX/yP3Fl8mgnehVp6UsyBQ/0UsT1jD1ERm8x6TMqm8GgTUFdih7mC+IVUIz3CF712P3/2SmAyC6Fy9MtvTR+2gLlbJzZPFyaZcOzUAy+/hhsF3oy0mRcnjI8gd/+4aBlu/uTAYVniUW/17ZzNrV5vrBia9wKJ1hF+KFd7LxIDTUaWLTynbPY5lmTn/sTGoGy5wm2Isc+rDd2ccD6jUxa9Hbjo77Hmh3k0Inu557HyGO9b19NdgWoZ+FXwGTDgRAXzhCmqnW6bG6RELdBPi4MPO+07NezH4cj4m6iYDgXm1tfppsuGjyOti7SZTgVpNmFillpwa53fuIhwW7emCwfmFxdEoL2LHMo/ONtU0CVmDBy9X6vsP2C4mFdh+99fRzEsc/LvBroRB2FOwqoTHAe1DuqoE7g4fwBdCHXtcCDMys4eSc02PGw8/ldiZelpxHjwyT2SYiqwkoboN1kGk4BcTqgrQC7igaqSKbO2YMfXSXf2vBZOtL0jpr2FQDq42Ic2B3Zd2jYKT2CP5QpBm46cdg3ekX9d491BNXITdKwEwi5RrA/FbkVOaPj8f/KtJiJkvtx8wZckyVRM8hxUjpPSRLoW4BHjnNQby2AZsMDz9yVtoo8tL/BRQaI7sVT3lfx+6xnOm0TDdy7If7s4MoL+EFS9GfBL+KQc3awp54IAI=" # DKRHUB_PASS
-    - secure: "mtfpF365HqKyqEdwQwf4BidrXFr6aTOfzcswUqBYiCl84VmiN7qnvctCXkIDi1KM2bsrMa6UnjIRZqEKvAQl/sAClr+pEDNz85Mv0dlVTsRIgCnwH+SlKTQB5BRr2GvnFR8lvzUaI0oRGC8V9puj5jfp7A9n2ZssY6qenFYS7uenXktdb9WFoIkobNkKNKHrvKkwIeHu9pOdocK6eNFtrUJmdSWP133mqMSZ8QO4WLyBOGFVg8FF/IkV1+BMzdqHAyPPF2V1YXo31dwC7jxBgHQASfHiYqk8+I2qBwB8kI4jPCRpWkkFmSjWi7j3me51Vf8QpboQ/q18AgCnSVo49OKTnbW7K6HgACGglzGDPdTGiF1UMS7Y8ShK5CK/eKzBxm/601zv2lZCmH5Ba4YaPCCR164niv5RtRlfiZf5FA7+QBzIm8+o4/vNYdsZ6OfdEpGt+GO7qSA2z/DuCU9FHoMzCI55Fg3QWJs+FXTFCjaJoU51wFyGQ3/mMZURd5C1sI3AhFCumfEculovb65Xx6bDB0c1Lrqxe++l3K8hgIdrtCpnhFXBkUgUBc4G6CmtDFvw/dOJ5CjyWAgW7iYydOYpJjUyo1CuBS+NAfxiAUGE/V2cWzswNLEkBgrK99dzM5rcCQixUu9pApN8BK3fK6D+KgpiGQpTSY/3J8Ef9o8=" # DOCKER_PROJ
-    - secure: "KU4qtDNplMfHFwFw9W1wxFRbzEcKg3v5wpxfabswiAJKPYv8GuRn+95dPhjIBNd1axRTb8QBBwXwgtqsFwA/EeaMOyKy/7/lXIGViJQrag093swxCZx4yZG+LQshIpFR6ecXv7ugj4m0iJtm29gDAZq73w0t9WKrMg2Yxd2yuGSCTqKmjSLWfMUGjboX7ux1tqd0C/LBLZsjAYMYXPk5Rbpu7Zoq0sqzd5XSrR6SPf5urvV+3zxpcTrlucZZa2C4fmcH2WV+PszEV1HhdPT+s47afi6tMWNH6no/V/0QMNUzHIfABl2/n3uSs+jnL6YaXHpexBLaCjMviSj2MIUM9LJSfDkcCRZMikiDnkkguheLRFVVsORXHsoRACzkZ5YXo7lt/GpYk8RySXdBSaz57WPYlgnuS7M6HjPk8zxnkJJ3hKwQBK4+flhzqXmOu7ednv8nzj9WDfA4B0F1RNqDeKAdSlXHpUHJK5Xdf45KtdPt7MNxFWv96lXr5xfUlGrYwChsNjUNhDyFz1BKXdreRcujxYToAqp05BYEoP24/JPjha4tAjcqbRb5CUYxuGSeg1bs0n5JldA0e7KoYhyzpRk3QmMhAfldkZgYvDWZJ86COnAerCJgMIOIc70ZzhCoCIkXaPQf0G1WyjZ2l5As1J7yHYZA4O7B5BpRPpH7yjQ=" # DOCKER_REPO
     # Commit SHA in short for tacking reason
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
   # Build matrix (variations of images)
   matrix:
-    - UBUNTU_VER=18.04
+    - UBUNTU_VER=19.04
 
 install:
   - echo "^^^ Nothing to Install on Travis CI ^^^"
@@ -43,20 +38,25 @@ script:
   #  - branch [u16.04, .. u18.04] become tags :u16.04_master, :u18.04_hotfix
   #  - tags [u16.04, .. u18.04] becomes  tags :u16.04_0.0.0, :u18.04_0.0.0
   #  - for latest we'll have :u18.04_latest tags
-  - export REPO=${DKRHUB_USER}/${DOCKER_PROJ}
+  - export REPO=${DKRHUB_REPO}
   - echo "REPO= ${REPO}"
-  - export TMP_SLUG=${TRAVIS_BRANCH/\//-}
-  - export BRANCH_SLUG=${TMP_SLUG/-/_}
+
+  - export TEMP_SLUG=${TRAVIS_BRANCH/\//_}
+  - echo "TEMP_SLUG=${TEMP_SLUG}"
+
+  - export BRANCH_SLUG=${TEMP_SLUG/-/_}
   - echo "BRANCH_SLUG= ${BRANCH_SLUG}"
+
   - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
   - echo ${TAG}
+
   - docker images
   - echo "EXEC# docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
   - docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} .
 
   - echo "EXEC# docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest"
   - docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest
-  #19.04_test-first-step
+
   - echo "Displaying local images build in the process"
   - docker images
 
