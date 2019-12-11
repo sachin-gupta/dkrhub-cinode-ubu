@@ -1,5 +1,6 @@
 # 1.0.0 / 2019-12-12
 
+- FIX: Built for `master`, `release/*`, `hotfix/*` and tags only
 - Added ubuntu flavors 16.04, 18.04 and 19.04 to travis matrix
 - Added `set -Eeo pipefail` to make travis exit on first error
 - FIX: /bin/sh: 1: locale-gen: not found by removing locales
