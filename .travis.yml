@@ -45,10 +45,16 @@ script:
   - export REPO=${DKRHUB_REPO}
   - echo "REPO= ${REPO}"
 
-  - export TEMP_SLUG=${TRAVIS_BRANCH/\//_}
+  # Replace all / with _ in TRAVIS_BRANCH
+  - export TEMP_SLUG=${TRAVIS_BRANCH//\//_}
   - echo "TEMP_SLUG=${TEMP_SLUG}"
 
-  - export BRANCH_SLUG=${TEMP_SLUG/-/_}
+  # Replace all - with _ in TRAVIS_BRANCH
+  - export TEMP_SLUG1=${TEMP_SLUG//-/_}
+  - echo "TEMP_SLUG1= ${TEMP_SLUG1}"
+
+  #Replace all . with _ in TRAVIS_BRANCH
+  - export BRANCH_SLUG=${TEMP_SLUG1//./_}
   - echo "BRANCH_SLUG= ${BRANCH_SLUG}"
 
   - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`

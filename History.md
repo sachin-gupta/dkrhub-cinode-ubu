@@ -1,5 +1,7 @@
 # 1.0.0 / 2019-12-12
 
+- FIX: Replace all /, - and . with \_ in `${TRAVIS_BRANCH}` for
+  dockerhub tag slug.
 - FIX: Built for `master`, `release/*`, `hotfix/*` and tags only
 - Added ubuntu flavors 16.04, 18.04 and 19.04 to travis matrix
 - Added `set -Eeo pipefail` to make travis exit on first error
