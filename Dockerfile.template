@@ -1,13 +1,15 @@
-# Base image for docker image genration
-FROM ubuntu:18.04 AS sacn-ubuntu-build-agent
+# Base image for docker image generation
+FROM ubuntu:_UBU_REL_ AS sacn-ubuntu-build-agent
 
 # Labelling of the image (author, version)
 LABEL maintainer="SACn <no-reply@unknown.com>"
 ENV IMG_AUTH="SACn <no-reply@unknown.com>"
 LABEL name="sacn-ubuntu-build-agent"
 ENV IMG_NAME "sacn-ubuntu-build-agent"
-LABEL version="0.0.0"
-ENV IMG_VER="0.0.0"
+LABEL version="_DKR_IMG_VER_"
+ENV IMG_VER="_DKR_IMG_VER_"
+label commit_sha="_COMMIT_SHA_"
+ENV IMG_SHA="_COMMIT_SHA_"
 
 # Set packages install in noninteractive mode.
 ENV DEBIAN_FRONTEND noninteractive
