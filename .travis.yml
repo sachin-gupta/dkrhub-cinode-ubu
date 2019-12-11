@@ -22,7 +22,6 @@ env:
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
   # Build matrix (variations of images)
   matrix:
-    - UBUNTU_VER=19.04
     - UBUNTU_VER=18.04
 
 install:
@@ -45,7 +44,8 @@ script:
   #  - tags [u16.04, .. u18.04] becomes  tags :u16.04_0.0.0, :u18.04_0.0.0
   #  - for latest we'll have :u18.04_latest tags
   - export REPO=${DOCKER_REPO}
-  - export BRANCH_SLUG=${TRAVIS_BRANCH/\//-}
+  - export TMP_SLUG=${TRAVIS_BRANCH/\//-}
+  - export BRANCH_SLUG=${TMP_SLUG/-/_}
   - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
   - docker images
   - echo "EXEC# docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
@@ -53,7 +53,7 @@ script:
 
   - echo "EXEC# docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest"
   - docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest
-
+  #19.04_test-first-step
   - echo "Displaying local images build in the process"
   - docker images
 
