@@ -43,10 +43,13 @@ script:
   #  - branch [u16.04, .. u18.04] become tags :u16.04_master, :u18.04_hotfix
   #  - tags [u16.04, .. u18.04] becomes  tags :u16.04_0.0.0, :u18.04_0.0.0
   #  - for latest we'll have :u18.04_latest tags
-  - export REPO=${DOCKER_REPO}
+  - export REPO=${DKRHUB_USER}/${DOCKER_PROJ}
+  - echo "REPO= ${REPO}"
   - export TMP_SLUG=${TRAVIS_BRANCH/\//-}
   - export BRANCH_SLUG=${TMP_SLUG/-/_}
+  - echo "BRANCH_SLUG= ${BRANCH_SLUG}"
   - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
+  - echo ${TAG}
   - docker images
   - echo "EXEC# docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
   - docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} .
