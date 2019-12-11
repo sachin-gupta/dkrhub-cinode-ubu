@@ -23,6 +23,9 @@ install:
   - echo "^^^ Nothing to Install on Travis CI ^^^"
 
 script:
+  # Quit on first error
+  - set -Eeo pipefail
+
   - export DKRFILE_VER=$(cat Dockerfile.version)
   - echo "~~~ BUILD# Dockerfile v${DKRFILE_VER} for Ubuntu:${UBUNTU_VER}) ..."
 
