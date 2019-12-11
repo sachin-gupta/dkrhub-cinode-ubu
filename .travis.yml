@@ -18,6 +18,7 @@ env:
   # Build matrix (variations of images)
   matrix:
     - UBUNTU_VER=19.04
+    - UBUNTU_VER=18.04
 
 install:
   - echo "^^^ Nothing to Install on Travis CI ^^^"
