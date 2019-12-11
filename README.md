@@ -1,5 +1,7 @@
 # Project
 
+[![Build Status](https://travis-ci.com/sachin-gupta/dkrhub-cinode-ubu.svg?branch=master)](https://travis-ci.com/sachin-gupta/dkrhub-cinode-ubu)
+
 This repository contains code to generate small docker image of **++Ubuntu with essentials docker, docker-compose, openssh, git etc.++** that can be used as build-agent in CI's like Gitlab.
 
 - On ubuntu, one can run familiar `apt-get` commands to install special build, test or deploy tools. It's much easier as ubuntu is much too popular.
