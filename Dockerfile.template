@@ -104,6 +104,11 @@ RUN apt-get remove -y docker docker-engine docker.io containerd runc
 RUN apt-get install -y docker-ce docker-ce-cli containerd.io
 
 # --------------- Add docker-compose (Official Method: 2019) ---------------
+ARG COMPOSE_VERSION=1.25.0
+
+#RUN curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+#    chmod +x /usr/local/bin/docker-compose
+
 # https://docs.docker.com/compose/install/
 RUN latesturl=$(curl -s https://api.github.com/repos/docker/compose/releases/latest \
     | grep "browser_download_url" \
