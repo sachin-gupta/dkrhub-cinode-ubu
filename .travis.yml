@@ -4,12 +4,16 @@ services:
   - docker
 
 # Branches to be build (normally or under pull request)
+# Only release & master will be built by CI
+# - You create release/*.*.* from feature/?, once it is built setup pull request
+# - When it is accepted master will rebuilt, now tag master (tag should not rebuilt)
+# - You may delete release/*.*.* and put same tag on master as well as feature
 branches:
   only:
     - master
-    - /^hotfix\/(.*)/
+    #- /^hotfix\/(.*)/
     - /^release\/(.*)/
-    - /^(v)(\d+\.)?(\d+\.)?(\*|\d+)$/
+    #- /^(v)(\d+\.)?(\d+\.)?(\*|\d+)$/
 env:
   # Global environment variables
   global:
