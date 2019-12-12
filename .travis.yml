@@ -1,0 +1,85 @@
+dist: bionic
+sudo: required
+services:
+  - docker
+
+# Branches to be build (normally or under pull request)
+branches:
+  only:
+    - master
+    - /^hotfix\/(.*)/
+    - /^release\/(.*)/
+    - /^(v)(\d+\.)?(\d+\.)?(\*|\d+)$/
+env:
+  # Global environment variables
+  global:
+    # Commit SHA in short for tacking reason
+    - COMMIT_SHA=${TRAVIS_COMMIT::8}
+  # Build matrix (variations of images)
+  matrix:
+    - UBUNTU_VER=19.04
+    - UBUNTU_VER=18.04
+
+install:
+  - echo "^^^ Nothing to Install on Travis CI ^^^"
+
+script:
+  # Quit on first error
+  - set -Eeo pipefail
+
+  - export DKRFILE_VER=$(cat Dockerfile.version)
+  - echo "~~~ BUILD# Dockerfile v${DKRFILE_VER} for Ubuntu:${UBUNTU_VER}) ..."
+
+  - echo "- Generating Dockerfile from Dockerfile.template"
+  - echo "           (Pushing UBUNTU_VER, DKRFILE_VER & COMMIT_SHA)..."
+  - sed "s/_UBU_REL_/${UBUNTU_VER}/g;s/_DKR_IMG_VER_/${DKRFILE_VER}/g;s/_COMMIT_SHA_/${COMMIT_SHA}/g" Dockerfile.template > Dockerfile.${UBUNTU_VER}
+
+  - echo "- First 11 lines for generated Dockerfile"
+  - head -n11 Dockerfile.${UBUNTU_VER}
+
+  - echo "- Building image from generated Dockerfile"
+  # For Branches: Tag as :UbuntuVer_BranchSlug
+  #  - branch [u16.04, .. u18.04] become tags :u16.04_master, :u18.04_hotfix
+  #  - tags [u16.04, .. u18.04] becomes  tags :u16.04_0.0.0, :u18.04_0.0.0
+  #  - for latest we'll have :u18.04_latest tags
+  - export REPO=${DKRHUB_REPO}
+  - echo "REPO= ${REPO}"
+
+  # Replace all / with _ in TRAVIS_BRANCH
+  - export TEMP_SLUG=${TRAVIS_BRANCH//\//_}
+  - echo "TEMP_SLUG=${TEMP_SLUG}"
+
+  # Replace all - with _ in TRAVIS_BRANCH
+  - export TEMP_SLUG1=${TEMP_SLUG//-/_}
+  - echo "TEMP_SLUG1= ${TEMP_SLUG1}"
+
+  #Replace all . with _ in TRAVIS_BRANCH
+  - export BRANCH_SLUG=${TEMP_SLUG1//./_}
+  - echo "BRANCH_SLUG= ${BRANCH_SLUG}"
+
+  - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
+  - echo ${TAG}
+
+  - docker images
+  - echo "EXEC# docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
+  - docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} .
+
+  - echo "EXEC# docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest"
+  - docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest
+
+  - echo "Displaying local images build in the process"
+  - docker images
+
+  #- echo "- Exporting artifact for pushing to Gtihub"
+  #- docker save -o builtimg.tar ${REPO}:${TAG}
+
+  - echo "- Login into dockerhub to push images to it"
+  - docker login -u "${DKRHUB_USER}" -p "${DKRHUB_PASS}"
+
+  - echo "EXEC# docker push ${REPO}"
+  - docker push ${REPO}
+
+notifications:
+  email:
+    on_success: always
+    on_failure: never
