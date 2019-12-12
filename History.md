@@ -1,4 +1,8 @@
-# 1.0.0 / 2019-12-12
+# 1.0.2 / 2019-12-12
+
+- FIX: Skip dockerhub image pushes for non-master branches
+
+# 1.0.1 / 2019-12-12
 
 - FIX: Built for `master`, `release/*` and not tags and hotfixes
   - Idea is convert `feature/*` to `release/<semver>` then once

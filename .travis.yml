@@ -81,7 +81,7 @@ script:
   - docker login -u "${DKRHUB_USER}" -p "${DKRHUB_PASS}"
 
   - echo "EXEC# docker push ${REPO}"
-  - docker push ${REPO}
+  - if [[ ${TRAVIS_TAG} == "master" ]]; then docker push ${REPO}; else echo 'SKIPPED PUSH - Its a non master branch'; fi
 
 notifications:
   email:
