@@ -71,13 +71,14 @@ script:
   - echo "IMAGE_TAG= ${TAG}"
 
   # BUILD: Build docker image from generated Dockerfile.${UBUNTU_VER} with name: curr_built
-  # --no-cache: Why use cache on travis, ultimately it'll be destroyed on new build
-  # --pull    : Always attempt to pull a newer version of the image during build [GREAT]
-  # --rm      : Remove intermediate containers after a successful build
-  # --tag     : Name and optionally a tag in the 'name:tag' format [GREAT]
+  # --no-cache  : Don't use cache to build image, this invokes full build of docker image [SLOW]
+  # --pull      : Always attempt to pull a newer version of the image during build [GREAT]
+  # --rm        : Remove intermediate containers after a successful build
+  # --tag       : Name and optionally a tag in the 'name:tag' format [GREAT]
+  # --cache-from: Faster build times using cache from pulled images [YES]
   - docker images
-  - echo "EXEC# docker build --no-cache --pull --rm -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
-  - docker build --no-cache --pull --rm -t ${REPO}:curr_built -f Dockerfile.${UBUNTU_VER} .
+  - echo "EXEC# docker build --pull --rm --cache-from ${REPO}:curr_built -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
+  - docker build --pull --rm --cache-from ${REPO}:curr_built -t ${REPO}:curr_built -f Dockerfile.${UBUNTU_VER} .
   - docker images
 
   #TEST: Nothing doing right now just create artifact of built image
