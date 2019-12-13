@@ -70,14 +70,18 @@ script:
   - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
   - echo "IMAGE_TAG= ${TAG}"
 
+  - echo "IS_PR_BLD - ${IS_PR_BLD}"
+  - echo "IS_BRA_BLD - ${IS_PR_BLD}"
+  - echo "IS_TAG_BLD - ${IS_PR_BLD}"
+
   #DEPLOY CONDITIONS: Only deploy for pure master branch or it's tags
   #                   (not for release or other branches or PR's to master)
   #1. SKIP - Pull Requests Deploys (Not Allowed)
-  - if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then echo 'SKIP - Pull Requests Deploys (Not Allowed)' && exit 0; fi
+  #- if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then echo 'SKIP - Pull Requests Deploys (Not Allowed)' fi
   #2. SKIP - Non Master Branch Deploys (Not Allowed)
-  - if [[ ${TRAVIS_BRANCH} != "master" ]]; then echo 'SKIP - Non Master Branch Deploys (Not Allowed)' && exit 0; fi
+  #- if [[ ${TRAVIS_BRANCH} != "master" ]]; then echo 'SKIP - Non Master Branch Deploys (Not Allowed)' && exit 0; fi
   #3. SKIP - Tags for Non Master Branch Deploys (Not Allowed)
-  - if [[ ${TRAVIS_TAG} != "" ] && [ ${TRAVIS_BRANCH} != "master" ]]; then echo 'SKIP - Tags for Non Master Branch Deploys (Not Allowed)' && exit 0; fi
+  #- if [[ ${TRAVIS_TAG} != "" ] && [ ${TRAVIS_BRANCH} != "master" ]]; then echo 'SKIP - Tags for Non Master Branch Deploys (Not Allowed)' fi
 
   - echo "EXEC# Tagging :curr_built image..."
   # ${TAG} as ${UBUNTU_VER}_${BRANCH_SLUG} or ${UBUNTU_VER}_${TRAVIS_TAG}
