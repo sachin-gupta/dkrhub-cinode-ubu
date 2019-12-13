@@ -1,0 +1,116 @@
+#
+# EASY GUIDE: https://config.travis-ci.com/
+#
+
+# Use Travis standard ubuntu v18.04 build environment with many tools installed: git, docker, python, ruby
+# (https://docs.travis-ci.com/user/reference/bionic/)
+os: linux
+dist: bionic
+arch: amd64
+
+# Set requirement of root, so that installation scripts in this build agent will be much more happy then us
+sudo: required
+
+# Setup services required like database, docker-in-docker,etc.
+services:
+  - docker
+
+# Setting on inline environment variables and build matrix (variants to be build like for Ubuntu 18, 19, ...)
+env:
+  # Global environment variables (these will be available to all stages, jobs of this configuration file)
+  # Note: Also needed following environment variables from Travis dashboard
+
+  global:
+    # Repository commit SHA in short (first eight characters are enough)
+    - COMMIT_SHA=${TRAVIS_COMMIT::8}
+    # Set noninteractive debian front-end so that ubuntu work with no prompts
+    - DEBIAN_FRONTEND=noninteractive
+  # Variations os build (for each row here travis will rebuilt this file with provided env. vars. in that row)
+  matrix:
+    #- UBUNTU_VER=19.04
+    - UBUNTU_VER=18.04
+    #- UBUNTU_VER=16.04
+
+# In this section we can install additional tools into travis ci-agent for build, test and deploy
+install:
+  - echo "^^^ Nothing to Install on Travis CI Agent ^^^"
+
+# Define Build Staged: Stages group jobs, and run jobs in each stage in parallel. But, stages run one after another sequentially.
+# - We can define build conditions globally, at stage level (here in if: condition) or at job level (using again if: clause)
+# Note:
+# - Travis set's up new VM for each stage (thus to keep pipeline fast using less stages only Prepare & Deploy)
+# - Stages won't share artifacts so you've to save them to external servers (for docker image it can be pushed to doc)
+# - Staged can't share artifact unless you upload it to shared place (for docker built pusk-pull images between
+#   build, test and deploy stages from dockerhub)
+stages:
+  - name: "Prepare"
+  - name: "Deploy"
+
+# Definition of jobs in various stages (note that jobs in a stage runs in parallel)
+# - We've one job per stage defined next (4 jobs runs in sequence governed by stages)
+# - Not much of branches and stages here (master, release, Anything Non-PR [feature, bugfix, ...])
+# Conditions:
+# - See https://docs.travis-ci.com/user/conditional-builds-stages-jobs/ for conditional builds, stages & jobs with if
+# - See https://docs.travis-ci.com/user/conditions-v1 for options in conditions
+jobs:
+  include:
+    # Prep Stage: (Build+Test)
+    # 1. Generates dockerfile from template as per 'matrix' to build particular ubuntu
+    # 2. Build's dockerfile and generate docker-image artifact inside travis ci-node
+    # 3. Test generated docker-image in ci-node for execution for failure or success
+    # 4. If build succeeds pushes image to dockerhub for deployment (only master & tags)
+    #    - This image will be tagged as build SHA (created on_success)
+    #    - Deploy stage will pull and test image from dockerhub then tag it
+    #      (it also removes SHA tags from dockerhub using dockerhub API)
+    - stage: Prepare
+      script:
+        - echo "BEGIN - Prepare Stage"
+        # Make scripts executable
+        - chmod 755 ./scripts/*.sh
+        # Import variables & functions
+        - bash ./scripts/env-init.sh
+        - echo ${HELLO_VARIABLE}
+        - hello_world_function SACn
+        # Execute main script for this stage
+        - bash ./scripts/build.sh
+        - echo "FINISH - Prepare Stage"
+      # https://docs.travis-ci.com/user/conditions-v1
+      if: ???
+
+
+
+        (branch=master)
+        - branch = master
+        - branch == /^hotfix\/(.*)/
+        - branch == /^bugfix\/(.*)/
+        - branch == /^release\/(.*)/
+        - branch == /^builds\/(.*)/
+        - branch == /^tests\/(.*)/
+        - branch == /^topic\/(.*)/
+      exclude:
+        if: branch = master
+
+    #Deploy Stage: Deploy tested docker-image to dockerhub for public usage
+    - stage: Deploy
+      # No need to checkout code during deployment stage in this project
+      git:
+        clone: false
+      script:
+        # Make scripts executable
+        - chmod 755 ./scripts/*.sh
+        # Import variables & functions
+        - bash ./scripts/env-init.sh
+        - echo ${HELLO_VARIABLE}
+        - hello_world_function SACn
+        # Execute main script for this stage
+        - bash ./scripts/deploy.sh
+      if: $TRAVIS_BRANCH == ^master$ || -n $TRAVIS_TAG
+
+# Notifications on_success only (we need to know new deployments, during development we watch failures so need no email
+notifications:
+  email:
+    #recipients:
+    #  - ${AUTH_EMAIL}
+    on_success: always
+    on_failure: never
+    on_cancel: never

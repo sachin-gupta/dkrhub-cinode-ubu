@@ -1,0 +1,67 @@
+# Listening ports, address and interfaces
+Port 22
+AddressFamily any
+ListenAddress 0.0.0.0
+ListenAddress ::
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# Logging (disabled)
+#SyslogFacility AUTH
+#LogLevel INFO
+
+# Authentication control
+LoginGraceTime 2m
+PermitRootLogin yes
+StrictModes no
+MaxAuthTries 3
+MaxSessions 3
+
+# Authentication behavior
+PubkeyAuthentication no
+HostbasedAuthentication no
+IgnoreUserKnownHosts yes
+IgnoreRhosts yes
+PasswordAuthentication yes
+PermitEmptyPasswords no
+
+# Only allow robust algos
+Ciphers aes128-ctr,aes192-ctr,aes256-ctr
+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-rsa,ssh-dss
+KexAlgorithms ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha256
+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
+
+# SSHd feature selection
+UsePAM no
+ChallengeResponseAuthentication no
+AllowAgentForwarding no
+AllowTcpForwarding no
+GatewayPorts no
+X11Forwarding no
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+PermitTTY yes
+PrintMotd no
+#PrintLastLog yes
+TCPKeepAlive yes
+#UseLogin no
+PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#UseDNS no
+PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# Banner (default)
+#Banner none
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+# override default of no subsystems
+Subsystem	sftp	/usr/lib/openssh/sftp-server
