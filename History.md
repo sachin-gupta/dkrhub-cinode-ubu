@@ -20,6 +20,7 @@ List of main development work (additions, fixes etc.) are as follows:
   - FIX: Docker build was slow even `--pull` is used to fetch existing image.
     - When there is no change in it should build fast from pulled image
     - COMMAND Changed: `docker build --pull --rm --cache-from ${REPO}:curr_built -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} .`
+  - FIX: Printing only first 128 characters `${TRAVIS_COMMIT_MESSAGE::128}` to save build log
 - MOD: History.md for upcoming Release-0.0.0
 - ADD: `.travis.yml` for single stage build+deploy by travis on dockerhub
 - ADD: TravisCI build tag for master branch added into README.md for visuals
