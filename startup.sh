@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set bash parameters: Exit on first error, etc.
-set -Eeo pipefail
+set -Eeo pipefail # (-) is enable (+) is disable
 
 # Welcome messge to be printed in the terminal.
 echo "!! Hello World !!"

@@ -1,0 +1,32 @@
+dist: bionic
+
+services:
+  - docker
+
+env:
+  global:
+    - COMMIT_SHA=${TRAVIS_COMMIT::8}
+
+stages:
+  - name: "Prepare"
+  - name: "Deploy"
+
+jobs:
+  include:
+    - stage: Prepare
+      script:
+        - set -Eeo pipefail
+        - chmod 755 ./scripts/envinfo.sh
+        - bash ./scripts/envinfo.sh > envinfo.txt
+        - cat envinfo.txt
+
+        - echo "~~ Build Success ~~"
+
+    - stage: Deploy
+      script:
+        - set -Eeo pipefail
+        - chmod 755 ./scripts/envinfo.sh
+        - bash ./scripts/envinfo.sh > envinfo.txt
+        - cat envinfo.txt
+
+        - echo "~~ Deploy Success ~~"
