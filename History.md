@@ -12,6 +12,11 @@ List of main development work (additions, fixes etc.) are as follows:
   - FTR: Added code to print environment information for easy debug on travis (printed on build agent)
   - FTR: Enhanced printing of build information (what is built: branch, tag or pull-request)
     - Also computed environment variables `IS_BRA_BLD`, `IS_TAG_BLD`, & `IS_PR_BLD`
+  - FIX: Deploy should only occur to master and it's tag and not to pull-requests
+    - Fixed checks in `.travis.yml` for suitable exit conditions
+      - RULE Added: Pull Requests Deploys (Not Allowed)
+      - RULE Added: Non Master Branch Deploys (Not Allowed)
+      - RULE Added: Tags for Non Master Branch Deploys (Not Allowed)
 - MOD: History.md for upcoming Release-0.0.0
 - ADD: `.travis.yml` for single stage build+deploy by travis on dockerhub
 - ADD: TravisCI build tag for master branch added into README.md for visuals
