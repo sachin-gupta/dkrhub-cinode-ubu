@@ -9,29 +9,21 @@ env:
     # Commit SHA for tracking needs
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
 
-    # @@ Travis Dashboard Variables Required !!
-    # DKRHUB_USER="Dockerhub username here"
-    # DKRHUB_PASS="Dockerhub password here"
-    # DKRHUB_PROJ="Name of dockerhub project"
-    # DKRHUB_REPO="${DKRHUB_USER}/${DKRHUB_PROJ}""
-    # AUTH_EMAIL="Email of author for notifications"
-
 stages:
   - name: "Prepare"
     if: |
-     (branch = master) OR \
-     (tag =~ /^v(\d+\.)(\d+\.)(\*|\d+)$/ AND branch = master) OR \
-     (type=pull_request AND branch=master) OR \
-     (branch =~ /^hotfix\/(.*)/) OR \
-     (branch =~ /^release\/(.*)/) OR \
-     (branch =~ /^builds\/(.*)/) OR \
-     (branch =~ /^tests\/(.*)/) OR \
-     (branch =~ /^topic\/(.*)/) OR \
-     (branch =~ /^hotfix\/(.*)/)
+      (branch = master) OR \
+      (tag =~ /^v(\d+\.)(\d+\.)(\*|\d+)$/ AND branch = master) OR \
+      (type=pull_request AND branch=master) OR \
+      (branch =~ /^hotfix\/(.*)/) OR \
+      (branch =~ /^release\/(.*)/) OR \
+      (branch =~ /^builds\/(.*)/) OR \
+      (branch =~ /^tests\/(.*)/) OR \
+      (branch =~ /^topic\/(.*)/) OR \
+      (branch =~ /^hotfix\/(.*)/)
 
   - name: "Deploy"
-    if:
-      (branch=master) AND \
+    if: (branch=master) AND \
       (tag =~ /^v(\d+\.)(\d+\.)(\*|\d+)$/) AND \
       (type!=pull_request)
 
@@ -45,11 +37,13 @@ jobs:
         - cat envinfo.txt
 
         - echo "~~ Build Success ~~"
-
-jobs:
-  include:
     - stage: Deploy
       script:
+        - set -Eeo pipefail
+        - chmod 755 ./scripts/envinfo.sh
+        - bash ./scripts/envinfo.sh > envinfo.txt
+        - cat envinfo.txt
+
         - echo "~~ Deploy Success ~~"
 
 notifications:
