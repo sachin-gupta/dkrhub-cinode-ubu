@@ -44,7 +44,7 @@ then
     echo "@@@ PR-Build# Yes, this build is for Pull-Request# ${TRAVIS_PULL_REQUEST}"
     echo "            # PR SOURCE: ${TRAVIS_PULL_REQUEST_BRANCH}, ${TRAVIS_PULL_REQUEST_SHA::8}"
     echo "            # PR TARGET: ${TRAVIS_BRANCH}"
-    echo "            # PR MESAGE: ${TRAVIS_COMMIT_MESSAGE}"
+    echo "            # PR MESAGE: ${TRAVIS_COMMIT_MESSAGE::128}"
 else
     export IS_PR_BLD=0
     echo "@@@ PR-Build# No, this build is NOT for Pull-Request"

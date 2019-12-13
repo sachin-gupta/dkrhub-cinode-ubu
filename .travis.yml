@@ -48,3 +48,9 @@ jobs:
         - cat envinfo.txt
 
         - echo "~~ Deploy Success ~~"
+notifications:
+  email:
+    recipients:
+      - ${AUTH_EMAIL}
+    on_success: never
+    on_failure: never
