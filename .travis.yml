@@ -1,0 +1,85 @@
+dist: bionic
+sudo: required
+services:
+  - docker
+
+# Only release & master will be built by CI (PRs on release/* go to master)
+branches:
+  only:
+    - master
+    - /^release\/(.*)/
+
+env:
+  # Global environment variables
+  global:
+    # Commit SHA for tracking needs
+    - COMMIT_SHA=${TRAVIS_COMMIT::8}
+
+install:
+  - echo "^^^ Nothing to Install on Travis CI ^^^"
+
+script:
+  # Quit on first error
+  - set -Eeo pipefail
+
+  - export DKRFL_VER=$(cat Dockerfile.version)
+  - export UBUNTU_VER=18.04
+  - echo "~~~ BUILD# Dockerfile v${DKRFL_VER} for Ubuntu:${UBUNTU_VER}) ..."
+
+  - echo "- Generating Dockerfile from Dockerfile.template"
+  - echo "  (Pushing UBUNTU_VER, DKRFL_VER & COMMIT_SHA)..."
+  - sed "s/{{UBU_REL}}/${UBUNTU_VER}/g;s/{{DKR_IMG_VER}}/${DKRFL_VER}/g;s/{{COMMIT_SHA}}/${COMMIT_SHA}/g" Dockerfile.template > Dockerfile
+
+  - echo "- First 11 lines for generated Dockerfile"
+  - head -n11 Dockerfile.${UBUNTU_VER}
+
+  - echo "- Building image from generated Dockerfile"
+  # Tagging On Dockerhub
+  #  - branch [u16.04, .. u18.04] become  dockerhub tags :u16.04_master, :u18.04_hotfix
+  #  - tags   [u16.04, .. u18.04] becomes dockerhub tags :u16.04_0.0.0, :u18.04_0.0.0
+  #  - for latest we'll have :u18.04_latest tags
+  - export REPO=${DKRHUB_REPO}
+  - echo "REPO= ${REPO}"
+
+  # Replace all / with _ in TRAVIS_BRANCH
+  - export TEMP_SLUG=${TRAVIS_BRANCH//\//_}
+  - echo "TEMP_SLUG=${TEMP_SLUG}"
+
+  # Replace all - with _ in TRAVIS_BRANCH
+  - export TEMP_SLUG1=${TEMP_SLUG//-/_}
+  - echo "TEMP_SLUG1= ${TEMP_SLUG1}"
+
+  #Replace all . with _ in TRAVIS_BRANCH
+  - export BRANCH_SLUG=${TEMP_SLUG1//./_}
+  - echo "BRANCH_SLUG= ${BRANCH_SLUG}"
+
+  - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
+  - echo ${TAG}
+
+  - docker images
+  - echo "EXEC# docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
+  - docker build -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} .
+
+  - echo "EXEC# docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest"
+  - docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest
+
+  - echo "Displaying local images build in the process"
+  - docker images
+
+  #- echo "- Exporting artifact for pushing to Gtihub"
+  #- docker save -o builtimg.tar ${REPO}:${TAG}
+
+  - echo "- Login into dockerhub to push images to it"
+  - docker login -u "${DKRHUB_USER}" -p "${DKRHUB_PASS}"
+
+  - echo "EXEC# docker push ${REPO}"
+  - if [[ ${TRAVIS_TAG} == "master" ]]; then docker push ${REPO}; else echo 'SKIPPED PUSH - Its a non master branch'; fi
+
+# Notifications on_success only (we need to know new deployments, during development we watch failures so need no email
+notifications:
+  email:
+    #recipients:
+    #  - ${AUTH_EMAIL}
+    on_success: always
+    on_failure: never
+    on_cancel: never
