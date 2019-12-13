@@ -36,7 +36,7 @@ script:
 
   - echo "- Generating Dockerfile from Dockerfile.template"
   - echo "  (Pushing UBUNTU_VER, DKRFL_VER & COMMIT_SHA)..."
-  - sed "s/{{UBU_REL}}/${UBUNTU_VER}/g;s/{{DKR_IMG_VER}}/${DKRFL_VER}/g;s/{{COMMIT_SHA}}/${COMMIT_SHA}/g" Dockerfile.template > Dockerfile
+  - sed "s/{{UBU_REL}}/${UBUNTU_VER}/g;s/{{DKR_IMG_VER}}/${DKRFL_VER}/g;s/{{COMMIT_SHA}}/${COMMIT_SHA}/g" Dockerfile.template > Dockerfile.${UBUNTU_VER}
 
   - echo "- First 11 lines for generated Dockerfile"
   - head -n11 Dockerfile.${UBUNTU_VER}

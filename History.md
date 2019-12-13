@@ -4,6 +4,9 @@ Generates dockerhub image tags for build environment [sacn-ubuntu-build-agent](h
 
 List of main development work (additions, fixes etc.) are as follows:
 
+- PR#6
+  - FIX: Build error - "cannot open 'Dockerfile.18.04' for reading: No such file or directory"
+    - Mistakenly generated `Dockerfile` instead of `Dockerfile.${UBUNTU_VER}`
 - MOD: History.md for upcoming Release-0.0.0
 - ADD: `.travis.yml` for single stage build+deploy by travis on dockerhub
 - ADD: TravisCI build tag for master branch added into README.md for visuals
