@@ -24,8 +24,9 @@ echo "BUILD DIR - ${TRAVIS_BUILD_DIR}"
 echo "SUDO      - ${TRAVIS_SUDO}"
 
 echo ""
+export COMMIT_MESSAGE=${TRAVIS_COMMIT_MESSAGE::128}
 echo "COMMIT ID (SHA)  - ${TRAVIS_COMMIT::8}"
-echo "COMMIT MESSAGE   - ${TRAVIS_COMMIT_MESSAGE}"
+echo "COMMIT MESSAGE   - ${COMMIT_MESSAGE}"
 echo "REPO SLUG        - ${TRAVIS_REPO_SLUG}"
 echo "BRANCH NAME      - ${TRAVIS_BRANCH}"
 echo "TAG NAME         - ${TRAVIS_TAG}"
@@ -65,6 +66,6 @@ else
     echo "@@@ PR-Build# This build is for Pull-Request no ${TRAVIS_PULL_REQUEST}"
     echo "            # PR SOURCE: ${TRAVIS_PULL_REQUEST_BRANCH}, ${TRAVIS_PULL_REQUEST_SHA::8}"
     echo "            # PR TARGET: ${TRAVIS_BRANCH}"
-    echo "            # PR MESAGE: ${TRAVIS_COMMIT_MESSAGE}"
+    echo "            # PR MESAGE: ${COMMIT_MESSAGE}"
 fi
 echo "------------------------------------------------------------------------------------------------------"
