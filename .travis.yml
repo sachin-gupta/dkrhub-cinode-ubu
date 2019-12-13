@@ -28,8 +28,8 @@ stages:
   # - Enable for master, or master-tags (only v*)
   - name: "Deploy"
     if: |
-      branch = master OR \
-      ((tag =~ /^(v)(\d+.)(\d+.)(\d+)$/) AND (branch = master))
+      ((branch = master) AND (type != pull_request)) OR \
+      ((tag =~ /^(v)(\d+.)(\d+.)(\d+)$/) AND (branch = master) AND (type != pull_request))
 
 jobs:
   include:
