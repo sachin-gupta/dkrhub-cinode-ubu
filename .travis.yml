@@ -70,21 +70,6 @@ script:
   - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
   - echo "IMAGE_TAG= ${TAG}"
 
-  # BUILD: Build docker image from generated Dockerfile.${UBUNTU_VER} with name: curr_built
-  # --no-cache  : Don't use cache to build image, this invokes full build of docker image [SLOW]
-  # --pull      : Always attempt to pull a newer version of the image during build [GREAT]
-  # --rm        : Remove intermediate containers after a successful build
-  # --tag       : Name and optionally a tag in the 'name:tag' format [GREAT]
-  # --cache-from: Faster build times using cache from pulled images [YES]
-  - docker images
-  - echo "EXEC# docker build --pull --rm --cache-from ${REPO}:curr_built -t ${REPO}:${TAG} -f Dockerfile.${UBUNTU_VER} ."
-  - docker build --pull --rm --cache-from ${REPO}:curr_built -t ${REPO}:curr_built -f Dockerfile.${UBUNTU_VER} .
-  - docker images
-
-  #TEST: Nothing doing right now just create artifact of built image
-  #- This will be lost as travis does not saves artifacts (we can push built image to dockerhub)
-  - docker save -o artifact.tar ${REPO}:curr_built
-
   #DEPLOY CONDITIONS: Only deploy for pure master branch or it's tags
   #                   (not for release or other branches or PR's to master)
   #1. SKIP - Pull Requests Deploys (Not Allowed)
@@ -98,23 +83,16 @@ script:
   # ${TAG} as ${UBUNTU_VER}_${BRANCH_SLUG} or ${UBUNTU_VER}_${TRAVIS_TAG}
   # - This will be 18.04_master or 18.04_*.*.* tags on docker
   - echo "1. Tag as :${TAG}..."
-  - docker tag ${REPO}:curr_built ${REPO}:${TAG}
+
   # Tag as ${UBUNTU_VER}_latest
   - echo "- Tag as :${UBUNTU_VER}_latest..."
-  - docker tag ${REPO}:${TAG} ${REPO}:${UBUNTU_VER}_latest
+
   # Tag v18.04 tags as latest
   - if [[ -n ${TRAVIS_TAG} ]]; then echo "- Tag v18.04 tags as :latest..." && docker tag ${REPO}:${TAG} latest; fi
-  # Display tags present in the system
-  - echo "List of all tags for pushing..."
-  - docker images
-
-  - echo "- Login into dockerhub to push images to it"
-  - echo 'EXEC# docker login -u "USER" -p "PASS"'
-  - docker login -u "${DKRHUB_USER}" -p "${DKRHUB_PASS}"
 
   - echo "- Pushing all tags in ${REPO}:curr_built to dockerhub"
-  - echo "EXEC# docker push ${REPO}"
   - if [[ ${TRAVIS_TAG} == "master" ]]; then docker push ${REPO}; else echo 'Skip Push for Non-Master Branch'; fi
+  - echo "DEPLOYED"
 
 # Notifications on_success only (we need to know new deployments, during development we watch failures so need no email
 notifications:
