@@ -1,12 +1,20 @@
 dist: bionic
-
+sudo: required
 services:
   - docker
 
 env:
+  # Global environment variables
   global:
+    # Commit SHA for tracking needs
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
 
+    # @@ Travis Dashboard Variables Required !!
+    # DKRHUB_USER="Dockerhub username here"
+    # DKRHUB_PASS="Dockerhub password here"
+    # DKRHUB_PROJ="Name of dockerhub project"
+    # DKRHUB_REPO="${DKRHUB_USER}/${DKRHUB_PROJ}""
+    # AUTH_EMAIL="Email of author for notifications"
 stages:
   # STAGE#1: Build & Test Stage
   # - Enable for master, hotfix, bugfix, release, builds, tests, topic, pull_request, or master-tags (v*, tmp* or qa*)
