@@ -1,14 +1,7 @@
-#dist: bionic
+dist: bionic
 sudo: required
 services:
   - docker
-
-# Only release & master will be built by CI (PRs on release/* go to master)
-# - Uses single stage (build, test and deploy strategy)
-branches:
-  only:
-    - master
-    - /^release\/(.*)/
 
 env:
   # Global environment variables
@@ -23,82 +16,46 @@ env:
     # DKRHUB_REPO="${DKRHUB_USER}/${DKRHUB_PROJ}""
     # AUTH_EMAIL="Email of author for notifications"
 
-install:
-  - echo "^^^ Nothing to Install on Travis CI ^^^"
+stages:
+  - name: "Prepare"
+    if: |
+     (branch = master) OR \
+     (tag =~ /^v(\d+\.)(\d+\.)(\*|\d+)$/ AND branch = master) OR \
+     (type=pull_request AND branch=master) OR \
+     (branch =~ /^hotfix\/(.*)/) OR \
+     (branch =~ /^release\/(.*)/) OR \
+     (branch =~ /^builds\/(.*)/) OR \
+     (branch =~ /^tests\/(.*)/) OR \
+     (branch =~ /^topic\/(.*)/) OR \
+     (branch =~ /^hotfix\/(.*)/)
 
-script:
-  # Quit on first error
-  - set -Eeo pipefail
+  - name: "Deploy"
+    if:
+      (branch=master) AND \
+      (tag =~ /^v(\d+\.)(\d+\.)(\*|\d+)$/) AND \
+      (type!=pull_request)
 
-  - echo "Pre-Build# Printing information of Travis Environment"
-  - chmod 755 ./scripts/envinfo.sh
-  - bash ./scripts/envinfo.sh > envinfo.txt
-  - cat envinfo.txt
+jobs:
+  include:
+    - stage: Prepare
+      script:
+        - set -Eeo pipefail
+        - chmod 755 ./scripts/envinfo.sh
+        - bash ./scripts/envinfo.sh > envinfo.txt
+        - cat envinfo.txt
 
-  - echo "Build# Continuing with Build and Test stage"
-  - export DKRFL_VER=$(cat Dockerfile.version)
-  - export UBUNTU_VER=18.04
-  - echo "~~~ BUILD# Dockerfile v${DKRFL_VER} for Ubuntu:${UBUNTU_VER}) ..."
+        - echo "~~ Build Success ~~"
 
-  - echo "- Generating Dockerfile from Dockerfile.template"
-  - echo "  (Pushing UBUNTU_VER, DKRFL_VER & COMMIT_SHA)..."
-  - sed "s/{{UBU_REL}}/${UBUNTU_VER}/g;s/{{DKR_IMG_VER}}/${DKRFL_VER}/g;s/{{COMMIT_SHA}}/${COMMIT_SHA}/g" Dockerfile.template > Dockerfile.${UBUNTU_VER}
+jobs:
+  include:
+    - stage: Deploy
+      script:
+        - echo "~~ Deploy Success ~~"
 
-  - echo "- First 11 lines for generated Dockerfile"
-  - head -n11 Dockerfile.${UBUNTU_VER}
-
-  - echo "- Building image from generated Dockerfile"
-  # Fetch name of Dockerhub repository
-  - export REPO=${DKRHUB_REPO}
-  - echo "REPO= ${REPO}"
-
-  # Convert name of BRANCH to SLUG for dockerhub tags
-  # 1. Replace all / with _ in TRAVIS_BRANCH
-  - export TEMP_SLUG=${TRAVIS_BRANCH//\//_}
-  - echo "TEMP_SLUG=${TEMP_SLUG}"
-  # 2. Replace all - with _ in TRAVIS_BRANCH
-  - export TEMP_SLUG1=${TEMP_SLUG//-/_}
-  - echo "TEMP_SLUG1= ${TEMP_SLUG1}"
-  # 3. Replace all . with _ in TRAVIS_BRANCH
-  - export BRANCH_SLUG=${TEMP_SLUG1//./_}
-  - echo "BRANCH_SLUG= ${BRANCH_SLUG}"
-
-  # Tagging computation for Dockerhub push & tag operation [Only master and it's tags will be deployed]
-  #  - branch [u16.04, .. u18.04] become  dockerhub tags :u16.04_master, :u18.04_brname
-  #  - tags   [u16.04, .. u18.04] becomes dockerhub tags :u16.04_0.0.0, :u18.04_0.0.0
-  #  - for latest we'll have :u18.04_latest tags
-  - export TAG=`if [ -n $TRAVIS_TAG ]; then echo "${UBUNTU_VER}_${BRANCH_SLUG}"; else echo "${UBUNTU_VER}_${TRAVIS_TAG}" ; fi`
-  - echo "IMAGE_TAG= ${TAG}"
-
-  #DEPLOY CONDITIONS: Only deploy for pure master branch or it's tags
-  #                   (not for release or other branches or PR's to master)
-  #1. SKIP - Pull Requests Deploys (Not Allowed)
-  - if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then echo 'SKIP - Pull Requests Deploys (Not Allowed)' fi
-  #2. SKIP - Non Master Branch Deploys (Not Allowed)
-  - if [[ ${TRAVIS_BRANCH} != "master" ]]; then echo 'SKIP - Non Master Branch Deploys (Not Allowed)' fi
-  #3. SKIP - Tags for Non Master Branch Deploys (Not Allowed)
-  - if [[ ${TRAVIS_TAG} != "" ] && [ ${TRAVIS_BRANCH} != "master" ]]; then echo 'SKIP - Tags for Non Master Branch Deploys (Not Allowed)' fi
-
-  - echo "EXEC# Tagging :curr_built image..."
-  # ${TAG} as ${UBUNTU_VER}_${BRANCH_SLUG} or ${UBUNTU_VER}_${TRAVIS_TAG}
-  # - This will be 18.04_master or 18.04_*.*.* tags on docker
-  - echo "1. Tag as :${TAG}..."
-
-  # Tag as ${UBUNTU_VER}_latest
-  - echo "- Tag as :${UBUNTU_VER}_latest..."
-
-  # Tag v18.04 tags as latest
-  - if [[ -n ${TRAVIS_TAG} ]]; then echo "- Tag v18.04 tags as :latest..." && docker tag ${REPO}:${TAG} latest; fi
-
-  - echo "- Pushing all tags in ${REPO}:curr_built to dockerhub"
-  - if [[ ${TRAVIS_TAG} == "master" ]]; then docker push ${REPO}; else echo 'Skip Push for Non-Master Branch'; fi
-  - echo "DEPLOYED"
-
-# Notifications on_success only (we need to know new deployments, during development we watch failures so need no email
 notifications:
   email:
     #recipients:
     #  - ${AUTH_EMAIL}
-    on_success: always
+    on_success: never
     on_failure: never
     on_cancel: never
