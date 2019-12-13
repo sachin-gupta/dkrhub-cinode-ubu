@@ -37,35 +37,32 @@ echo "PULL REQUEST SHA - ${TRAVIS_PULL_REQUEST_SHA::8}"
 # Is this request for branch only (no tags no pull requests)
 echo ""
 echo "------------------------------------------------------------------------------------------------------"
-if [ -n ${TRAVIS_TAG} ] && [ ${TRAVIS_PULL_REQUEST} == "false" ]
-then
-    export IS_BRA_BLD=1
-    echo "@@@ Branch-Build# Yes, this is pure branch build (not for tag or pull-request)"
-else
-    export IS_BRA_BLD=0
-    echo "@@@ Branch-Build# No, this is not a pure branch (could be for a tag or pull-request)"
-fi
-
-# Is this build for tag only (tag is set but no pull request)
-if [ ${TRAVIS_TAG} != "" ] && [ ${TRAVIS_PULL_REQUEST} == "false" ]
-then
-    export IS_TAG_BLD=1
-    echo "@@@ Tag-Build# Yes, this is pure tag build (not for branch or pull-request)"
-else
-    export IS_TAG_BLD=0
-    echo "@@@ Tag-Build# No, this is not a pure tag build (could be for a branch or pull-request)"
-fi
-
 # Is this a pull-request if so display it's number
-if [ ${TRAVIS_PULL_REQUEST} == "false" ]
+export IS_BRA_BLD=0
+if [ ${TRAVIS_PULL_REQUEST} != "false" ]
 then
-    export IS_PR_BLD=0
-    echo "@@@ PR-Build# This build is not for Pull-Request";
-else
     export IS_PR_BLD=1
-    echo "@@@ PR-Build# This build is for Pull-Request# ${TRAVIS_PULL_REQUEST}"
+    echo "@@@ PR-Build# Yes, this build is for Pull-Request# ${TRAVIS_PULL_REQUEST}"
     echo "            # PR SOURCE: ${TRAVIS_PULL_REQUEST_BRANCH}, ${TRAVIS_PULL_REQUEST_SHA::8}"
     echo "            # PR TARGET: ${TRAVIS_BRANCH}"
     echo "            # PR MESAGE: ${COMMIT_MESSAGE}"
+else
+    export IS_PR_BLD=0
+    echo "@@@ PR-Build# No, this build is NOT for Pull-Request"
+
+    # Is this build for tag only (tag is set but no pull request)
+    if [ ${TRAVIS_TAG} != "" ] ]
+    then
+        export IS_TAG_BLD=1
+        echo "@@@ Tag-Build# Yes, this build is for Tag# ${TRAVIS_TAG} on Branch# ${TRAVIS_BRANCH}"
+        export IS_BRA_BLD=0
+        echo "@@@ Branch-Build# No, this build is NOT for Branch"
+    else
+        export IS_TAG_BLD=0
+        echo "@@@ Tag-Build# No, this is NOT for Tag"
+        export IS_BRA_BLD=1
+        echo "@@@ Tag-Build# Yes, this build is for Branch# ${TRAVIS_BRANCH}"
+    fi
 fi
+
 echo "------------------------------------------------------------------------------------------------------"
