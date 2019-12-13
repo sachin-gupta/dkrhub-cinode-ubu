@@ -26,12 +26,6 @@ ARG ADMIN_EMAIL="no-reply@unknown.com"
 # Update repository source for package install.
 RUN apt-get update -y
 
-# Setup en_US.UTF-8 locale and verify
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-
 # --------------- Install must've packages for build-agent ---------------
 RUN apt-get install -y \
     apt-transport-https \
