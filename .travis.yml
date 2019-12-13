@@ -8,6 +8,8 @@ env:
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
 
 stages:
+  - name: "CheckCondition"
+
   # STAGE#1: Build & Test Stage
   # - Enable for master, hotfix, bugfix, release, builds, tests, topic, pull_request, or master-tags (v*, tmp* or qa*)
   - name: "Prepare"
@@ -31,6 +33,14 @@ stages:
 
 jobs:
   include:
+    - stage: CheckCondition
+      script:
+        - set -Eeo pipefail
+        - chmod 755 ./scripts/envinfo.sh
+        - bash ./scripts/envinfo.sh > envinfo.txt
+        - cat envinfo.txt
+
+        - echo "Check Condition in Travis Built"
     - stage: Prepare
       script:
         - set -Eeo pipefail
