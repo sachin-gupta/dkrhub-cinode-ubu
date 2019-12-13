@@ -9,6 +9,7 @@ List of main development work (additions, fixes etc.) are as follows:
     - Mistakenly generated `Dockerfile` instead of `Dockerfile.${UBUNTU_VER}`
   - FIX: Build error - "/bin/sh: 1: locale-gen: not found"
     - Removed locale generation code from Dockerfile (not imp)
+  - FTR: Added code to print environment information for easy debug on travis (printed on build agent)
 - MOD: History.md for upcoming Release-0.0.0
 - ADD: `.travis.yml` for single stage build+deploy by travis on dockerhub
 - ADD: TravisCI build tag for master branch added into README.md for visuals

@@ -30,6 +30,12 @@ script:
   # Quit on first error
   - set -Eeo pipefail
 
+  - echo "Pre-Build# Printing information of Travis Environment"
+  - chmod 755 ./scripts/envinfo.sh
+  - bash ./scripts/envinfo.sh > envinfo.txt
+  - cat envinfo.txt
+
+  - echo "Build# Continuing with Build and Test stage"
   - export DKRFL_VER=$(cat Dockerfile.version)
   - export UBUNTU_VER=18.04
   - echo "~~~ BUILD# Dockerfile v${DKRFL_VER} for Ubuntu:${UBUNTU_VER}) ..."
