@@ -37,7 +37,7 @@ echo "PULL REQUEST SHA - ${TRAVIS_PULL_REQUEST_SHA::8}"
 # Is this request for branch only (no tags no pull requests)
 echo ""
 echo "------------------------------------------------------------------------------------------------------"
-if [ ${TRAVIS_TAG} == "" ] && [ ${TRAVIS_PULL_REQUEST} == "false" ]
+if [ -n ${TRAVIS_TAG} ] && [ ${TRAVIS_PULL_REQUEST} == "false" ]
 then
     export IS_BRA_BLD=1
     echo "@@@ Branch-Build# Yes, this is pure branch build (not for tag or pull-request)"
@@ -57,13 +57,13 @@ else
 fi
 
 # Is this a pull-request if so display it's number
-if [ ${TRAVIS_PULL_REQUEST} == "false" ]]
+if [ ${TRAVIS_PULL_REQUEST} == "false" ]
 then
     export IS_PR_BLD=0
     echo "@@@ PR-Build# This build is not for Pull-Request";
 else
     export IS_PR_BLD=1
-    echo "@@@ PR-Build# This build is for Pull-Request no ${TRAVIS_PULL_REQUEST}"
+    echo "@@@ PR-Build# This build is for Pull-Request# ${TRAVIS_PULL_REQUEST}"
     echo "            # PR SOURCE: ${TRAVIS_PULL_REQUEST_BRANCH}, ${TRAVIS_PULL_REQUEST_SHA::8}"
     echo "            # PR TARGET: ${TRAVIS_BRANCH}"
     echo "            # PR MESAGE: ${COMMIT_MESSAGE}"
