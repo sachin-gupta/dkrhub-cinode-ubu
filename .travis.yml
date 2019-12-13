@@ -8,8 +8,26 @@ env:
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
 
 stages:
+  # STAGE#1: Build & Test Stage
+  # - Enable for master, hotfix, bugfix, release, builds, tests, topic, pull_request, or master-tags (v*, tmp* or qa*)
   - name: "Prepare"
+    if: |
+      ((branch = master) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^hotfix\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^bugfix\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^release\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^builds\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^tests\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^topic\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      type = pull_request OR \
+      ((tag =~ /^(v|tmp|qa)(\d+.)(\d+.)(\d+)$/) AND (branch = master))
+
+  # STAGE#2: Deploy to Prod Stage
+  # - Enable for master, or master-tags (only v*)
   - name: "Deploy"
+    if: |
+      ((branch = master) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((tag =~ /^(v)(\d+.)(\d+.)(\d+)$/) AND (branch = master) AND (type != pull_request))
 
 jobs:
   include:
