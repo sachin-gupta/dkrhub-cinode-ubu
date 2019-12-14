@@ -92,8 +92,6 @@ jobs:
     - stage: Prepare
       script:
         - echo "~~ Build Started ~~"
-        # Setup exit behavior for scripts
-        - set -Eeo pipefail # (-) is enable (+) is disable
         # Making all scripts executable
         - chmod 755 ./scripts/envinfo.sh
         # Printing important diagnostics env vars
@@ -111,8 +109,6 @@ jobs:
     - stage: Deploy
       script:
         - echo "~~ Deploy Started ~~"
-        # Setup exit behavior for scripts
-        - set -Eeo pipefail # (-) is enable (+) is disable
         # Making all scripts executable
         - chmod 755 ./scripts/envinfo.sh
         # Printing important diagnostics env vars
