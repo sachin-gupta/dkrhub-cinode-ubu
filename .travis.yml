@@ -93,7 +93,7 @@ jobs:
       script:
         - echo "~~ Build Started ~~"
         # Making all scripts executable
-        - chmod 755 ./scripts/envinfo.sh
+        - chmod 755 ./scripts/*.sh
         # Printing important diagnostics env vars
         - bash ./scripts/envinfo.sh > envinfo.txt
         - cat envinfo.txt
@@ -110,7 +110,7 @@ jobs:
       script:
         - echo "~~ Deploy Started ~~"
         # Making all scripts executable
-        - chmod 755 ./scripts/envinfo.sh
+        - chmod 755 ./scripts/*.sh
         # Printing important diagnostics env vars
         - bash ./scripts/envinfo.sh > envinfo.txt
         - cat envinfo.txt
