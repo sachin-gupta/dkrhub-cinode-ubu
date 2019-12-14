@@ -2,6 +2,7 @@
 
 Added code to generate docker image of **Ubuntu with essentials like git, rar etc.** including software like **docker, docker-compose, openssh, etc.**. Primary use is as a build-agent in CI's like Gitlab. Also this project may work as template for Gitflow based continuous deployment using Travis CI and Github.
 
+- MOV: Moved export of SHARED variables and functions from `envinfo.sh` to `library.sh`
 - ADD: `docs/gitflow-guide.md` file for theory on Gitflow with `Quick CI Setup Checklist`
 - MOD: `.travis.yml` with `os: linux`, `sudo: required`, `language: c` to make cfg complete
 - MOD: `.travis.yml` with comments for env var needed in Travis Dashboard to run Project.

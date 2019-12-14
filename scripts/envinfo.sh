@@ -64,12 +64,6 @@ else
     fi
 fi
 
-# Exporting hello-world function
-hello_world() {
-    echo "Hello World"
-}
-export -f hello_world
-
 # Exporting dummy env. variable
 export ENV_LOADED=1
 
