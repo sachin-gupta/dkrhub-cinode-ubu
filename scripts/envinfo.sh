@@ -50,7 +50,7 @@ else
     echo "@@@ PR-Build# No, this build is NOT for Pull-Request"
 
     # Is this build for tag only (tag is set but no pull request)
-    if [ ${TRAVIS_TAG} != "" ] ]
+    if [ ${TRAVIS_TAG} != "" ]
     then
         export IS_TAG_BLD=1
         echo "@@@ Tag-Build# Yes, this build is for Tag# ${TRAVIS_TAG} on Branch# ${TRAVIS_BRANCH}"
