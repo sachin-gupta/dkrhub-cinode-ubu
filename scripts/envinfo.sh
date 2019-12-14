@@ -38,7 +38,7 @@ echo ""
 echo "------------------------------------------------------------------------------------------------------"
 # Is this a pull-request if so display it's number
 export IS_BRA_BLD=0
-if [ ${TRAVIS_PULL_REQUEST} != "false" ]
+if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]
 then
     export IS_PR_BLD=1
     echo "@@@ PR-Build# Yes, this build is for Pull-Request# ${TRAVIS_PULL_REQUEST}"
@@ -50,7 +50,7 @@ else
     echo "@@@ PR-Build# No, this build is NOT for Pull-Request"
 
     # Is this build for tag only (tag is set but no pull request)
-    if [ ${TRAVIS_TAG} != "" ]
+    if [[ ${TRAVIS_TAG} != "" ]]
     then
         export IS_TAG_BLD=1
         echo "@@@ Tag-Build# Yes, this build is for Tag# ${TRAVIS_TAG} on Branch# ${TRAVIS_BRANCH}"
