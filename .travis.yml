@@ -3,6 +3,13 @@ dist: bionic
 services:
   - docker
 
+# @@ Travis Dashboard Variables Required to Run Project !!
+# DKRHUB_USER="Dockerhub username here"
+# DKRHUB_PASS="Dockerhub password here"
+# DKRHUB_PROJ="Name of dockerhub project"
+# DKRHUB_REPO="${DKRHUB_USER}/${DKRHUB_PROJ}""
+# AUTH_EMAIL="Email of author for notifications"
+
 env:
   global:
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
