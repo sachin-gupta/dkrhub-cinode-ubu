@@ -1,16 +1,20 @@
 #!/bin/bash
 ##
-## Script for Prepare stage  [BUILD, TEST, TST-DEPLOY]
+## Script for Prepare stage  [LINT, BUILD, GENERATE, TEST]
 ##
 
 set -Eeo pipefail # (-) is enable (+) is disable
 
 echo "START: Build Script"
 
-# Check global variables or function imported ?
-# (or needs a fix | done from ./scripts/env-init.sh)
-echo ${HELLO_VARIABLE}
-hello_world_function BuildTestSh
+# Sourcing & testing global library functions
+chmod 755 ./scripts/library.sh
+source ./scripts/library.sh
+echo "HELLO_VARIBLE: ${HELLO_VARIBLE}"
+hello_world BuildSh
+
+#--- STEPS
+echo "Not doing anything just like that"
 
 echo "~~~ BUILD & TEST SUCCESFULL ~~~"
 echo "END  : Build Script"

@@ -1,16 +1,20 @@
 #!/bin/bash
 ##
-## Script for Deploy stage [TEST, DEPLOY & VERIFY]
+## Script for Deploy stage [TEST-IMG, TEST-DEPLOY, DEPLOY & VERIFY]
 ##
 
 set -Eeo pipefail # (-) is enable (+) is disable
 
 echo "START: Deploy Script"
 
-# Check global variables or function imported ?
-# (or needs a fix | done from ./scripts/env-init.sh)
-echo ${HELLO_VARIABLE}
-hello_world_function DeploySh
+# Sourcing & testing global library functions
+chmod 755 ./scripts/library.sh
+source ./scripts/library.sh
+echo "HELLO_VARIBLE: ${HELLO_VARIBLE}"
+hello_world DeploySh
+
+#--- STEPS
+echo "Not doing anything just like that"
 
 echo "~~~ TEST, DEPLOY & VERIFY SUCCESFULL ~~~"
 echo "END  : Deploy Script"
