@@ -2,6 +2,11 @@
 
 Added code to generate docker image of **Ubuntu with essentials like git, rar etc.** including software like **docker, docker-compose, openssh, etc.**. Primary use is as a build-agent in CI's like Gitlab. Also this project may work as template for Gitflow based continuous deployment using Travis CI and Github. Revision 0.0.0 is an alpha, here no output will be generated. This is just to test iff Travis CI workflow with Gitlab is setup correctly or not as per: [docs/build-table.md](docs/build-table.md)
 
+- FIX: `.travis.yml` to check error code of bash scripts just after call
+  ```
+      - EXIT_CODE=$?
+      - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
+  ```
 - FIX: Not using `if [[ ... ]]` for conditions in `./scripts/envinfo.sh`. Double brackets to be used everywhere
   - Inside `travis.yml` as well as any external script called like `./scripts/envinfo.sh`.
 - FIX: Making all scripts executable was not using `*.sh` corrected as `chmod 755 ./scripts/*.sh` in `.travis.yml`
@@ -29,3 +34,7 @@ Added code to generate docker image of **Ubuntu with essentials like git, rar et
 - ADD: Vanilla ubuntu:1804 based docker image with `Hello World`
 - ADD: CONTRIBUTING.md file for contributions making process for this repository.
 - ADD: .gitignore file for arresting commit of windows, vscode and linux trash to git repo.
+
+```
+
+```

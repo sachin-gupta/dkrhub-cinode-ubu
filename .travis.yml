@@ -96,6 +96,8 @@ jobs:
         - chmod 755 ./scripts/*.sh
         # Printing important diagnostics env vars
         - bash ./scripts/envinfo.sh > envinfo.txt
+        - EXIT_CODE=$?
+        - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         - cat envinfo.txt
         # Execute main script for this stage
         - bash ./scripts/build.sh
@@ -113,6 +115,8 @@ jobs:
         - chmod 755 ./scripts/*.sh
         # Printing important diagnostics env vars
         - bash ./scripts/envinfo.sh > envinfo.txt
+        - EXIT_CODE=$?
+        - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         - cat envinfo.txt
         # Execute main script for this stage
         - bash ./scripts/deploy.sh
