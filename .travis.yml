@@ -1,10 +1,18 @@
+# Using travis Ubuntu build environment as it had many tools installed: git, docker, python
+# - Using ubuntu based build agent will allow ubuntu scripts & commands to be used in build steps
+# - Like I can freely use `sudo apt-get install xyz` to install tools xyz or even do a `pip install`
+os: linux
 dist: bionic
 
-os: linux
+# Root access into build agent for special commands
 sudo: required
-language: c
 
+# Choosing default python build env. as common to all
+language: python
+
+# Services containers required in project: databases, docker
 services:
+  # Required to use Docker-in-Docker for building Dockerfile
   - docker
 
 # @@ Travis Dashboard Variables Required to Run Project !!
@@ -13,14 +21,34 @@ services:
 # DKRHUB_PROJ="Name of dockerhub project"
 # DKRHUB_REPO="${DKRHUB_USER}/${DKRHUB_PROJ}""
 # AUTH_EMAIL="Email of author for notifications"
-
+#
 env:
+  # Global environment variables (constants and computed)
   global:
+    # Repository commit SHA in short (first eight characters are enough)
     - COMMIT_SHA=${TRAVIS_COMMIT::8}
+    # Set noninteractive debian front-end so that ubuntu work with no prompts
+    - DEBIAN_FRONTEND=noninteractive
+  # Travis will repeat build with each row in matrix and populate env vars
+  # mentioned here. This will be used to create multiple images from Dockerfile
+  matrix:
+    - UBUNTU_VER=18.04
 
+# Installation of additional tools into travis ci-agent for build, test and deploy
+install:
+  - echo "^^^ Nothing to Install yet on Travis CI Agent ^^^"
+
+# Build Stages for the Project
+# - Stages runs sequentially and house multiple parallel jobs (jobs may allow_faliure)
+# - It's natural to have build conditions at Stage level to avoid repetitions in jobs
+# - Travis has exception of not able to store artifacts (so to pass them in stages
+#   you've to use owns server. We shall be pushing build images to Docker Registry
+#   & those shall be pulled in Deploy stage)
+# - It's a simple project thus having only 2 stages: Prepare & Deploy
 stages:
   # STAGE#1: Build & Test Stage
-  # - Enable for master, hotfix, bugfix, release, builds, tests, topic, pull_request, or master-tags (v*, tmp* or qa*)
+  # - Stage for multiple jobs: pre-build (lint), build and test. Once done generates tested artifact (staging release)
+  # - Enable only for master, hotfix, bugfix, release, builds, tests, topic, pull_request, or master-tags (v*, tmp* or qa*)
   - name: "Prepare"
     if: |
       ((branch = master) AND (tag IS blank) AND (type != pull_request)) OR \
@@ -33,35 +61,74 @@ stages:
       type = pull_request OR \
       ((tag =~ /^(v|tmp|qa)(\d+.)(\d+.)(\d+)$/) AND (branch = master))
 
-  # STAGE#2: Deploy to Prod Stage
-  # - Enable for master, or master-tags (only v*)
+  # STAGE#2: Deployment to Production
+  # - Stage representing all - Staging, QA, UAT, & Prod. Will receive tested artifact from build and pushes it to Dockerhub
+  # - Enable for master, or master-tags (only v*). You can't deploy from any other branch or tag into production zone
   - name: "Deploy"
     if: |
       ((branch = master) AND (tag IS blank) AND (type != pull_request)) OR \
       ((tag =~ /^(v)(\d+.)(\d+.)(\d+)$/) AND (branch = master) AND (type != pull_request))
 
+# Prep Stage: (Build+Test)
+# 1. Generates dockerfile from template as per 'matrix' to build particular ubuntu
+# 2. Build's dockerfile and generate docker-image artifact inside travis ci-node
+# 3. Test generated docker-image in ci-node for execution for failure or success
+# 4. If build succeeds pushes image to dockerhub for deployment (only master & tags)
+#    - This image will be tagged as build SHA (created on_success)
+#    - Deploy stage will pull and test image from dockerhub then tag it
+#      (it also removes SHA tags from dockerhub using dockerhub API)
+
+#Deploy Stage: Deploy tested docker-image to dockerhub for public usage
+
+# Build Jobs for the Project
+# - We've one job per stage defined next, totalling two: Prepare & Deploy
+#
 jobs:
   include:
+    #---------------------------------------------- PREPARE ----------------------------------------------
+    # TASKS
+    # - Use build.sh to build docker-image from Dockerfile
+    # - Prepare stage  [LINT, BUILD, GENERATE, TEST]
     - stage: Prepare
       script:
-        - set -Eeo pipefail
+        - echo "~~ Build Started ~~"
+        # Setup exit behavior for scripts
+        - set -Eeo pipefail # (-) is enable (+) is disable
+        # Making all scripts executable
         - chmod 755 ./scripts/envinfo.sh
+        # Printing important diagnostics env vars
         - bash ./scripts/envinfo.sh > envinfo.txt
         - cat envinfo.txt
-
+        # Execute main script for this stage
+        - bash ./scripts/build.sh
+        #  Announcing Stage Ending
         - echo "~~ Build Success ~~"
 
+    #---------------------------------------------- DEPLOY ----------------------------------------------
+    # TASKS
+    # - Use deploy.sh to publish docker-image to Dockerhub
+    # - Deploy stage [TEST-IMG, TEST-DEPLOY, DEPLOY & VERIFY]
     - stage: Deploy
       script:
-        - set -Eeo pipefail
+        - echo "~~ Deploy Started ~~"
+        # Setup exit behavior for scripts
+        - set -Eeo pipefail # (-) is enable (+) is disable
+        # Making all scripts executable
         - chmod 755 ./scripts/envinfo.sh
+        # Printing important diagnostics env vars
         - bash ./scripts/envinfo.sh > envinfo.txt
         - cat envinfo.txt
-
+        # Execute main script for this stage
+        - bash ./scripts/deploy.sh
+        #  Announcing Stage Ending
         - echo "~~ Deploy Success ~~"
+
+# Configuration of EMail Notifications
+# on_success: required to know as deployment is made
+# on_failure: not requires as will bomb email address
 notifications:
   email:
     recipients:
       - ${AUTH_EMAIL}
-    on_success: never
+    on_success: always
     on_failure: never
