@@ -7,8 +7,9 @@ This repository contains code to generate docker image of **Ubuntu with essentia
 - Making Tech. Contributions : [CONTRIBUTING.md](CONTRIBUTING.md)
 - Licensing for the Project : [LICENSE](LICENSE)
 - Travis CI Build Configuration: [.travis.yml](.travis.yml)
-- Printing of Travis Env. Vars : [scripts\envinfo.sh](scripts\envinfo.sh)
+- Printing of Travis Env. Vars : [scripts/envinfo.sh](scripts/envinfo.sh)
 - History of Changes (Detailed): [History.md](History.md)
+- Quick CI Setup & Gitflow Theory : [docs/gitflow-guide.md](docs/gitflow-guide.md)
 
 ## Travis Dashboard Variables Required
 
