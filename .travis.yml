@@ -1,5 +1,9 @@
 dist: bionic
 
+os: linux
+sudo: required
+language: c
+
 services:
   - docker
 
