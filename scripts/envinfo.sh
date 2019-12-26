@@ -70,6 +70,9 @@ echo "--------------------------------------------------------------------------
 # lost when returing to .travis.yml)
 echo "export ENV_LOADED=1" > fnresult.txt
 
+# Adding information of docker enviornment (travis to file) - Non Blocking
+docker info > docker-info.txt || true
+
 # Exporting function execution result to fnresult.txt (Unfortunately using EXIT_CODE=$? always makes EXIT_CODE=1
 # when returing to .travis.yml thus "if [[ $EXIT_CODE -ne 0 ]]; then set +e && exit $EXIT_CODE; fi" command fails)
 echo "export EXIT_CODE=$?" >> fnresult.txt
