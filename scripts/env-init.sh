@@ -19,4 +19,4 @@
 # export DKRHUB_REPO="${DKRHUB_USER}/${DKRHUB_PROJ}""
 # export AUTH_EMAIL="Email of author for notifications"
 
-export HELLO_VARIABLE="! SACn Welcomes You [EnvVar]!"
+export HELLO_VARIABLE="! SACn Welcomes You [env-init.sh]!"

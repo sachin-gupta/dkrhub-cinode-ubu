@@ -7,10 +7,10 @@
 #set -Eeo pipefail # (-) is enable (+) is disable
 
 # Exporting sample enviornment variable
-export HELLO_VARIBLE="! SACn Welcomes You [SharedEnvVar]!"
+export HELLO_VARIABLE="! SACn Welcomes You [library.sh]!"
 
 # Exporting sample hello-world function
 hello_world() {
-    echo "Hello World"
+    echo "Hello World $1"
 }
 export -f hello_world
