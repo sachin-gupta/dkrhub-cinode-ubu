@@ -64,7 +64,12 @@ else
     fi
 fi
 
-# Exporting dummy env. variable
-export ENV_LOADED=1
-
 echo "------------------------------------------------------------------------------------------------------"
+
+# Exporting dummy env. variable (Using fnresult.txt instead of direct exports. As direct export will be
+# lost when returing to .travis.yml)
+echo "export ENV_LOADED=1" > fnresult.txt
+
+# Exporting function execution result to fnresult.txt (Unfortunately using EXIT_CODE=$? always makes EXIT_CODE=1
+# when returing to .travis.yml thus "if [[ $EXIT_CODE -ne 0 ]]; then set +e && exit $EXIT_CODE; fi" command fails)
+echo "export EXIT_CODE=$?" >> fnresult.txt

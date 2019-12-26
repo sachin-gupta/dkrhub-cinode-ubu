@@ -16,5 +16,8 @@ hello_world DeploySh
 #--- STEPS
 echo "Not doing anything just like that"
 
-echo "~~~ TEST, DEPLOY & VERIFY SUCCESFULL ~~~"
 echo "END  : Deploy Script"
+
+# Exporting function execution result to fnresult.txt (Unfortunately using EXIT_CODE=$? always makes EXIT_CODE=1
+# when returing to .travis.yml thus "if [[ $EXIT_CODE -ne 0 ]]; then set +e && exit $EXIT_CODE; fi" command fails)
+echo "export EXIT_CODE=$?" > fnresult.txt

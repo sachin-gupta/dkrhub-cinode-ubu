@@ -95,12 +95,16 @@ jobs:
         # Making all scripts executable
         - chmod 755 ./scripts/*.sh
         # Printing important diagnostics env vars
+        - EXIT_CODE=0
         - bash ./scripts/envinfo.sh > envinfo.txt
-        - EXIT_CODE=$?
+        - echo "EXIT_CODE:= $EXIT_CODE" && cat fnresult.txt && source fnresult.txt && rm -rf fnresult.txt && echo "EXIT_CODE:= $EXIT_CODE"
         - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         - cat envinfo.txt
         # Execute main script for this stage
+        - EXIT_CODE=0
         - bash ./scripts/build.sh
+        - echo "EXIT_CODE:= $EXIT_CODE" && cat fnresult.txt && source fnresult.txt && rm -rf fnresult.txt && echo "EXIT_CODE:= $EXIT_CODE"
+        - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         #  Announcing Stage Ending
         - echo "~~ Build Success ~~"
 
@@ -114,12 +118,16 @@ jobs:
         # Making all scripts executable
         - chmod 755 ./scripts/*.sh
         # Printing important diagnostics env vars
+        - EXIT_CODE=0
         - bash ./scripts/envinfo.sh > envinfo.txt
-        - EXIT_CODE=$?
+        - echo "EXIT_CODE:= $EXIT_CODE" && cat fnresult.txt && source fnresult.txt && rm -rf fnresult.txt && echo "EXIT_CODE:= $EXIT_CODE"
         - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         - cat envinfo.txt
         # Execute main script for this stage
+        - EXIT_CODE=0
         - bash ./scripts/deploy.sh
+        - echo "EXIT_CODE:= $EXIT_CODE" && cat fnresult.txt && source fnresult.txt && rm -rf fnresult.txt && echo "EXIT_CODE:= $EXIT_CODE"
+        - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         #  Announcing Stage Ending
         - echo "~~ Deploy Success ~~"
 

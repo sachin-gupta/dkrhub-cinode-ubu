@@ -3,10 +3,10 @@
 Added code to generate docker image of **Ubuntu with essentials like git, rar etc.** including software like **docker, docker-compose, openssh, etc.**. Primary use is as a build-agent in CI's like Gitlab. Also this project may work as template for Gitflow based continuous deployment using Travis CI and Github. Revision 0.0.0 is an alpha, here no output will be generated. This is just to test iff Travis CI workflow with Gitlab is setup correctly or not as per: [docs/build-table.md](docs/build-table.md)
 
 - FIX: `.travis.yml` to check error code of bash scripts just after call
-  ```
-      - EXIT_CODE=$?
-      - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
-  ```
+  - Using `EXIT_CODE=$?` with `if [[ $EXIT_CODE -ne 0 ]]; then set +e && exit $EXIT_CODE; fi` in `.travis.yml` does not work. Travis always makes `EXIT_CODE=1` on using `EXIT_CODE=$?` after call of bash script in `.travis.yml`
+  - Now storing return status of function in file `fnresult.txt` using command `echo "export EXIT_CODE=$?" > fnresult.txt` and sourcing it in `.travis.yml` to get function results back
+    - This is working fine, also pushed `export ENV_LOADED=1` to `fnresult.txt` for demonstration that environment variables can be exchanged via intermediate file from bash script to `.travis.yml`
+- FIX: In `export HELLO_VARIABLE="! SACn Welcomes You [scripts\env-init.sh]!"` used name of file to differentiate from where this export is made. Also modified `hello_world` to print argument `$`
 - FIX: Not using `if [[ ... ]]` for conditions in `./scripts/envinfo.sh`. Double brackets to be used everywhere
   - Inside `travis.yml` as well as any external script called like `./scripts/envinfo.sh`.
 - FIX: Making all scripts executable was not using `*.sh` corrected as `chmod 755 ./scripts/*.sh` in `.travis.yml`
