@@ -15,8 +15,8 @@ This repository contains code to generate docker image of **Ubuntu with essentia
 
 In order to build the project in Travis CI following envirnment variables to be setup using it's project dashboard
 
-- DKRHUB_USER="Dockerhub username here
-- DKRHUB_PASS="Dockerhub password here
-- DKRHUB_PROJ="Name of dockerhub project
-- DKRHUB_REPO='DKRHUB_USER/DKRHUB_PROJ'
-- AUTH_EMAIL="Email of author for notifications
+- DKRHUB_USER="Dockerhub username here"
+- DKRHUB_PASS="Dockerhub password here"
+- DKRHUB_PROJ="Name of dockerhub project"
+- DKRHUB_REPO="DKRHUB_USER/DKRHUB_PROJ"
+- AUTH_EMAIL="Email of author for notifications"

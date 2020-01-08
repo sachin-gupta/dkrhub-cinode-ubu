@@ -100,6 +100,8 @@ jobs:
         - echo "EXIT_CODE:= $EXIT_CODE" && cat fnresult.txt && source fnresult.txt && rm -rf fnresult.txt && echo "EXIT_CODE:= $EXIT_CODE"
         - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         - cat envinfo.txt
+        - docker --version
+        - cat docker-info.txt
         # Execute main script for this stage
         - EXIT_CODE=0
         - bash ./scripts/build.sh
@@ -123,6 +125,8 @@ jobs:
         - echo "EXIT_CODE:= $EXIT_CODE" && cat fnresult.txt && source fnresult.txt && rm -rf fnresult.txt && echo "EXIT_CODE:= $EXIT_CODE"
         - if [[ $EXIT_CODE -ne 0 ]]; then echo "ERR! (EXIT_CODE=$EXIT_CODE)" && set +e && exit $EXIT_CODE; fi
         - cat envinfo.txt
+        - docker --version
+        - cat docker-info.txt
         # Execute main script for this stage
         - EXIT_CODE=0
         - bash ./scripts/deploy.sh
