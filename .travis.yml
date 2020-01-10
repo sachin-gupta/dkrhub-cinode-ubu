@@ -1,0 +1,122 @@
+# Using travis Ubuntu build environment as it had many tools installed: git, docker, python
+# - Using ubuntu based build agent will allow ubuntu scripts & commands to be used in build steps
+# - Like I can freely use `sudo apt-get install xyz` to install tools xyz or even do a `pip install`
+os: linux
+dist: bionic
+
+# Root access into build agent for special commands
+sudo: required
+
+# Choosing default python build env. as common to all
+language: python
+
+# Services containers required in project: databases, docker
+services:
+  # Required to use Docker-in-Docker for building Dockerfile
+  - docker
+
+# @@ Travis Dashboard Variables Required to Run Project !!
+# AUTH_EMAIL="Email of author for notifications"
+#
+env:
+  # Global environment variables (constants and computed)
+  global:
+    # Repository commit SHA in short (first eight characters are enough)
+    - COMMIT_SHA=${TRAVIS_COMMIT::8}
+
+# Installation of additional tools into travis ci-agent for build, test and deploy
+install:
+  - echo "^^^ Nothing to Install yet on Travis CI Agent ^^^"
+
+# Build Stages for the Project
+# - Stages runs sequentially and house multiple parallel jobs (jobs may allow_failure)
+# - It's natural to have build conditions at Stage level to avoid repetitions in jobs
+# - Travis has exception of not able to store artifacts (so to pass them in stages
+#   you've to use owns server. We shall be pushing build images to Docker Registry
+#   & those shall be pulled in Deploy stage)
+# - It's a simple project thus having only 2 stages: Prepare & Deploy
+stages:
+  # STAGE#1: Build & Test Stage
+  # - Stage for multiple jobs: pre-build (lint), build and test. Once done generates tested artifact (staging release)
+  # - Enable only for master, hotfix, bugfix, release, builds, tests, topic, pull_request, or master-tags (v*, tmp* or qa*)
+  #   (NOTE: Never apply v* and qa* tags to other branches)
+  - name: "Prepare"
+    if: |
+      ((branch = master) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^hotfix\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^bugfix\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^release\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^builds\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^tests\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((branch =~ /^topic\/(.*)/) AND (tag IS blank) AND (type != pull_request)) OR \
+      type = pull_request OR \
+      ((tag =~ /^(v|tmp|qa)(\d+.)(\d+.)(\d+)$/) AND (type != pull_request))
+
+  # STAGE#2: Deployment to Production
+  # - Stage representing all - Staging, QA, UAT, & Prod. Will receive tested artifact from build and pushes it to Dockerhub
+  # - Enable for master, or master-tags (only v*). You can't deploy from any other branch or tag into production zone
+  #   (NOTE: Never apply v* and qa* tags to other branches)
+  - name: "Deploy"
+    if: |
+      ((branch = master) AND (tag IS blank) AND (type != pull_request)) OR \
+      ((tag =~ /^(v|tmp|qa)(\d+.)(\d+.)(\d+)$/) AND (type != pull_request))
+
+# Build Jobs for the Project
+# - We've one job per stage defined next, totalling two: Prepare & Deploy
+#
+jobs:
+  include:
+    #---------------------------------------------- PREPARE ----------------------------------------------
+    # TASKS
+    # - Use build.sh to build docker-image from Dockerfile
+    # - Prepare stage  [LINT, BUILD, GENERATE, TEST]
+    - stage: Prepare
+      script:
+        # Announcing Stage Started
+        - echo "~~ Build Stage Started ~~"
+
+        # Announcing Stage Finished
+        - echo "~~ Build Stage Finished ~~"
+
+    #---------------------------------------------- DEPLOY ----------------------------------------------
+    # TASKS
+    # - Use deploy.sh to publish docker-image to Dockerhub
+    # - Deploy stage [TEST-IMG, TEST-DEPLOY, DEPLOY & VERIFY]
+    - stage: Deploy
+      script:
+        # Announcing Stage Started
+        - echo "~~ Deploy Stage Started ~~"
+
+        # Making all scripts executable
+        - chmod 755 ./scripts/*.sh
+
+        # Add Deployment Tool (https://github.com/travis-ci/dpl)
+        - echo "~~ Installing Deploy Tool ~~"
+        - gem install dpl --pre
+
+        # Verbose Diagnostics Details for identifying Type of Build
+        #  CHK: Master Builds
+        - if [[ ${TRAVIS_TAG} == "" ]]; then echo "@@@ Tag-Build# No, Branch# ${TRAVIS_BRANCH}"; fi
+        #  CHK: Tagged Builds
+        - if [[ ${TRAVIS_TAG} != "" ]]; then echo "@@@ Tag-Build# Yes, Tag# ${TRAVIS_TAG} on Branch# ${TRAVIS_BRANCH}"; fi
+
+        # Execute main deployment script for this stage
+
+        # Using method 'call_script && echo "success" || echo "failure"'
+        - export RET_VAL=NULL
+        - bash ./scripts/deploy.sh && export RET_VAL=$? || export RET_VAL=$?
+        - echo "RET_VAL=$RET_VAL"
+        - if [[ $RET_VAL -ne 0 ]]; then echo "ERR! (RET_VAL=$RET_VAL)" && set +e && exit $RET_VAL; else echo "SUCCESS! (RET_VAL=$RET_VAL)" ;fi
+
+        # Announcing Stage Finished
+        - echo "~~ Deploy Stage Finished ~~"
+
+# Configuration of EMail Notifications
+# on_success: required to know as deployment is made
+# on_failure: required to know as master deploy failed
+notifications:
+  email:
+    recipients:
+      - ${AUTH_EMAIL}
+    on_success: always
+    on_failure: always
