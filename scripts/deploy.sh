@@ -13,78 +13,73 @@ source ./scripts/library.sh
 echo "HELLO_VARIBLE: ${HELLO_VARIBLE}"
 hello_world DeploySh
 
-#--- DEPLOY THEORY:
-#~~ Quick Recap: Master Branch Builds Deployments ~~
-# TAG NAMES   ?  !!ENABLED!!
-#   1. Untagged     : master     [--draft]
-#   2. Tagged (tmp*): tmp*       [--draft]
-#   3. Tagged (qa* ): qa*        [--prerelease]
-#   4. Tagged (v*  ): v*, latest [--release]
-# ENVIORNMENTS ? !!DISABLED!!
-#   1. Untagged     : STAGING
-#   2. Tagged (tmp*): QA
-#   3. Tagged (qa* ): QA, UAT
-#   4. Tagged (v*  ): QA, UAT, PROD
-
-#~~ Quickj Help on DPL Tool Command Line Switches ~~
-# dpl releases
-#   --token ${DEPLOY_TOKEN}
-#   --repo ${TRAVIS_REPO_SLUG}
-#   --file GLOB
-#   --overwrite
-#   --prerelease
-#   --draft
-#   --release_number NUM
-#   --release_notes STR  or --release_notes_file PATH
-#   --tag_name TAG
-#   --target_commitish STR
-#   --name NAME
-
 #--- DEPLOY STEPS:
 # ADD: Add first level TOC to History.md and Releases.md file by script
 bash ./scripts/add-toc.sh History.md
 bash ./scripts/add-toc.sh Releases.md
 
-# CHK: Untagged Master Branch Builds
+# ADD: Git credentials to travis so that we can create tags from script
+git config --global user.email "${GIT_USEREMAIL}"
+git config --global user.name "${GIT_USERNAME}"
+
+#CASE-1. UnTagged Master         : Deploy to [STAGING]
+#   - Use dpl tool to create github release named `STAGING`, note dpl requires tag to be present but master is untagged so
+#   - Create (*or update*) tag named `STAGING` on master branch first before using dpl tool
 if [[ ${TRAVIS_TAG} == "" ]]
 then
     echo "!!! Deploying Branch# ${TRAVIS_BRANCH}"
 
-    # Call deployment function [Deploy: Publish To Tags] and exit if error
-    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file README.md --file LICENSE --file Releases.md --file History.md --overwrite --draft --release_notes "Non-Production Staging Build for Branch# ${TRAVIS_BRANCH}" --tag_name ${TRAVIS_BRANCH} --target_commitish ${TRAVIS_COMMIT} --name ${TRAVIS_BRANCH}
+    # Create (*or update*) tag named `staging` on master branch first before using dpl tool
+
+    echo "~ deleting tags locally and remotely"
+    git tag -d STAGING || true
+    git push -f https://${DEPLOY_TOKEN}@github.com/${TRAVIS_REPO_SLUG} :STAGING
+
+    echo "~ create tag locally and push remotely"
+    git tag -f -a STAGING -m "AUTOTAG: From Branch# ${TRAVIS_BRANCH}"
+    git push -f https://${DEPLOY_TOKEN}@github.com/${TRAVIS_REPO_SLUG} STAGING
+
+    # Use dpl tool to create github release named `STAGING` and exit if error
+    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file LICENSE --file Releases.md --file History.md --overwrite --release_notes_file Releases.md --tag_name STAGING --target_commitish ${TRAVIS_COMMIT} --name "Non-Production Staging Build for Branch# ${TRAVIS_BRANCH}"
 
     DPL_STATUS=$?
     if [[ $DPL_STATUS -ne 0 ]]; then echo "ERR! (Deploy Failed, DPL_STATUS=$DPL_STATUS)" && exit $DPL_STATUS; fi
 fi
 
-# CHK: Tagged (tmp*) Master Branch Builds
+#CASE-2. Tagged Master (tmp*.*.*): Deploy to [QA]
+#   - Use dpl tool to create github release named `tmp*.*.*`, this will clutter github dashboard
+#   - No need to create (*or update*) tag named `tmp*.*.*`, as user has already tagged manually
 if [[ ${TRAVIS_TAG} != "" ]] && [[ ${TRAVIS_TAG} == tmp* ]]; then
     echo "!!! Deploying Temporary Tag# ${TRAVIS_TAG}"
 
-    # Call deployment function [Deploy: Publish To Tags] and exit if error
-    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file README.md --file LICENSE --file Releases.md --file History.md --overwrite --draft --release_notes "Non-Production QA Build for Temporary Tag# ${TRAVIS_TAG}" --tag_name ${TRAVIS_TAG} --target_commitish ${TRAVIS_COMMIT} --name ${TRAVIS_TAG}
+    # Use dpl tool to create github release named `tmp*.*.*` and exit if error
+    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file LICENSE --file Releases.md --file History.md --overwrite --release_notes_file Releases.md --tag_name ${TRAVIS_TAG} --target_commitish ${TRAVIS_COMMIT} --name "Non-Production QA Build for Temporary Tag# ${TRAVIS_TAG}"
 
     DPL_STATUS=$?
     if [[ $DPL_STATUS -ne 0 ]]; then echo "ERR! (Deploy Failed, DPL_STATUS=$DPL_STATUS)" && exit $DPL_STATUS; fi
 fi
 
-# CHK: Tagged (qa*) Master Branch Builds
+#CASE-3. Tagged Master (qa*.*.*) : Deploy to [QA & UAT]
+#   - Use dpl tool to create github release named `qa*.*.*`, this will clutter github dashboard
+#   - No need to create (*or update*) tag named `qa*.*.*`, as user has already tagged manually
 if [[ ${TRAVIS_TAG} != "" ]] && [[ ${TRAVIS_TAG} == qa* ]]; then
     echo "!!! Deploying Quality Tag# ${TRAVIS_TAG}"
 
-    # Call deployment function [Deploy: Publish To Tags] and exit if error
-    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file README.md --file LICENSE --file Releases.md --file History.md --overwrite --prerelease --release_notes "Non-Production QA+UAT Build for Quality Tag# ${TRAVIS_TAG}" --tag_name ${TRAVIS_TAG} --target_commitish ${TRAVIS_COMMIT} --name ${TRAVIS_TAG}
+    # Use dpl tool to create github release named `qa*.*.*` and exit if error
+    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file LICENSE --file Releases.md --file History.md --overwrite --release_notes_file Releases.md --tag_name ${TRAVIS_TAG} --target_commitish ${TRAVIS_COMMIT} --name "Non-Production QA+UAT Build for Quality Tag# ${TRAVIS_TAG}"
 
     DPL_STATUS=$?
     if [[ $DPL_STATUS -ne 0 ]]; then echo "ERR! (Deploy Failed, DPL_STATUS=$DPL_STATUS)" && exit $DPL_STATUS; fi
 fi
 
-# CHK: Tagged (v*) Master Branch Builds
+#CASE-4. Tagged Master (v*.*.*)  : Deploy to [QA, UAT & PROD]
+#   - Use dpl tool to create github release named `v*.*.*`, this will clutter github dashboard
+#   - No need to create (*or update*) tag named `v*.*.*`, as user has already tagged manually
 if [[ ${TRAVIS_TAG} != "" ]] && [[ ${TRAVIS_TAG} == v* ]]; then
     echo "!!! Deploying Release Tag# ${TRAVIS_TAG}"
 
-    # Call deployment function [Deploy: Publish To Tags] and exit if error
-    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file README.md --file LICENSE --file Releases.md --file History.md --overwrite --release_notes "Release#${TRAVIS_TAG}: Production QA+UAT+PROD Build for Release Tag# ${TRAVIS_TAG}. See attachment `Releases.md` for details." --tag_name ${TRAVIS_TAG} --target_commitish ${TRAVIS_COMMIT} --name ${TRAVIS_TAG}
+    # Use dpl tool to create github release named `v*.*.*` and exit if error
+    dpl releases --token ${DEPLOY_TOKEN} --repo ${TRAVIS_REPO_SLUG} --file LICENSE --file Releases.md --file History.md --overwrite --release_notes_file Releases.md ${TRAVIS_TAG}." --tag_name ${TRAVIS_TAG} --target_commitish ${TRAVIS_COMMIT} --name "Release#${TRAVIS_TAG}: Production QA+UAT+PROD Build for Release Tag#
 
     export DPL_STATUS=$?
     if [[ $DPL_STATUS -ne 0 ]]; then echo "ERR! (Deploy Failed, DPL_STATUS=$DPL_STATUS)" && exit $DPL_STATUS; fi
